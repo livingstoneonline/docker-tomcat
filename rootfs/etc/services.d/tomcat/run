@@ -1,0 +1,17 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh :
+with-contenv
+multisubstitute
+{
+  import -i MYSQL_ROOT_USER
+  import -i MYSQL_ROOT_PASSWORD
+}
+foreground {
+  loopwhilex -x 0
+  redirfd -w 1 /dev/null
+  redirfd -w 2 /dev/null
+  mysql --protocol=socket -u ${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSWORD} -e "SELECT 1"
+}
+s6-setuidgid tomcat
+/opt/tomcat/bin/catalina.sh run

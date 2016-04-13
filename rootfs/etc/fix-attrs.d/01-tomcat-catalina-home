@@ -1,0 +1,3 @@
+/opt/tomcat true tomcat 0740 0755
+/opt/fedora true tomcat 0740 0755
+/opt/solr true tomcat 0740 0755

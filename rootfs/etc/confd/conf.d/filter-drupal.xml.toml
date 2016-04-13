@@ -1,0 +1,8 @@
+[template]
+src = "filter-drupal.xml.tmpl"
+dest = "/opt/fedora/server/config/filter-drupal.xml"
+prefix= "/mysql"
+uid = 105
+gid = 110
+mode="0644"
+keys = [ "/root/user", "/root/password" ]

@@ -1,0 +1,6 @@
+version: "2"
+services:
+  tomcat:
+    build: .
+    container_name: tomcat
+    image: livingstoneonline/tomcat
