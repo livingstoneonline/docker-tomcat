@@ -52,6 +52,7 @@ in the second and third sections below.
               </xsl:for-each>
               <xsl:if test="mods:note[@displayLabel='creator']">
                 <xsl:value-of select="'Unknown creator'"/>
+                <xsl:text>; </xsl:text>
               </xsl:if>
             </xsl:variable>
             <xsl:value-of select="substring($creator_text,0,string-length($creator_text)-1)"/>
@@ -71,6 +72,7 @@ in the second and third sections below.
               </xsl:for-each>
               <xsl:if test="mods:note[@displayLabel='addressee']">
                 <xsl:value-of select="'Unknown addressee'"/>
+                <xsl:text>; </xsl:text>
               </xsl:if>
             </xsl:variable>
             <xsl:value-of select="substring($addressee_text,0,string-length($addressee_text)-1)"/>
