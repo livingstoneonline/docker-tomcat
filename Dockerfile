@@ -9,7 +9,7 @@ EXPOSE 8080
 COPY build /build
 
 # Install Java / Tomcat.
-ARG TOMCAT_VERSION="7.0.68"
+ARG TOMCAT_VERSION="7.0.69"
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-oracle \
     CATALINA_HOME=/opt/tomcat \
