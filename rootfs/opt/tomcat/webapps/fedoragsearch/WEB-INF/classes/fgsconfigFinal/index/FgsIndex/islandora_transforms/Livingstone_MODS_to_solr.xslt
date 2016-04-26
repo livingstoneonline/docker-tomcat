@@ -206,7 +206,7 @@ metadata processing needs.
     </field>
   </xsl:template>
 
-  <xsl:template match="mods:originInfo[mods:dateCreated[@encoding='iso8601']]" mode="CollectingLA">
+  <xsl:template match="mods:originInfo[mods:dateCreated[@encoding='iso8601']]" mode="Livingstone">
     <xsl:variable name="dateStart"
                   select="java:edu.ucla.library.IsoToSolrDateConverter.getStartDateFromIsoDateString(normalize-space(mods:dateCreated[@encoding='iso8601']))" />
     <xsl:variable name="dateEnd"
