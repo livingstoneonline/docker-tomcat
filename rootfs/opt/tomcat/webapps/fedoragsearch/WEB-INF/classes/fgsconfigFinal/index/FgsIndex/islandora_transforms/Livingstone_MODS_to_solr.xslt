@@ -211,15 +211,40 @@ metadata processing needs.
                   select="java:edu.ucla.library.IsoToSolrDateConverter.getStartDateFromIsoDateString(normalize-space(mods:dateCreated[@encoding='iso8601']))" />
     <xsl:variable name="dateEnd"
                   select="java:edu.ucla.library.IsoToSolrDateConverter.getEndDateFromIsoDateString(normalize-space(mods:dateCreated[@encoding='iso8601']))" />
-    <field name="mods_dateCreated_dt">
-      <xsl:value-of select="$dateStart"/>
-    </field>
+    <xsl:variable name="counter" select="substring-before($dateStart,'-')" />
+    <xsl:variable name="end" select="substring-before($dateEnd,'-')" />
+    <xsl:call-template name="date-loop">
+      <xsl:with-param name="counter">
+        <xsl:number value="number($counter)" />
+      </xsl:with-param>
+      <xsl:with-param name="end">
+        <xsl:number value="number($end)" />
+      </xsl:with-param>
+    </xsl:call-template>
     <field name="mods_dateCreated_start_dt">
       <xsl:value-of select="$dateStart"/>
     </field>
     <field name="mods_dateCreated_end_dt">
       <xsl:value-of select="$dateEnd"/>
     </field>
+  </xsl:template>
+
+  <xsl:template name="date-loop">
+    <xsl:param name="counter"/>
+    <xsl:param name="end"/>
+    <xsl:if test="$counter &lt;= $end">
+      <field name="mods_dateCreated_mi">
+        <xsl:value-of select="$counter"/>
+      </field>
+      <xsl:call-template name="date-loop">
+        <xsl:with-param name="counter">
+          <xsl:number value="number($counter)+1" />
+        </xsl:with-param>
+        <xsl:with-param name="end">
+          <xsl:number value="$end" />
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
   </xsl:template>
 
   <!-- Temporary workaround to allow us to separate out the Arabic subjects -->
