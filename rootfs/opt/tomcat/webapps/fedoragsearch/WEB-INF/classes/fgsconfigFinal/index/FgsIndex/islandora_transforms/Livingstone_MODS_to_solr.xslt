@@ -43,6 +43,14 @@ in the second and third sections below.
         </xsl:when>
         <xsl:when test="starts-with($PID, 'liv')">
           <xsl:apply-templates select="mods:*" mode="Livingstone"/>
+          
+          <field name="dates_ms">
+            <xsl:for-each select="mods:originInfo/mods:dateCreated[not(@encoding)]">
+              <xsl:sort select="text()"/>
+              <xsl:value-of select="text()"/>
+            </xsl:for-each>
+          </field>
+          
           <field name="creator_s">
             <xsl:variable name="creator_text">
               <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'creator']">
@@ -57,6 +65,18 @@ in the second and third sections below.
             </xsl:variable>
             <xsl:value-of select="substring($creator_text,0,string-length($creator_text)-1)"/>
           </field>
+          
+          <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'creator']">
+            <xsl:sort select="mods:namePart/text()"/>
+            <field name="creators_ms">
+              <xsl:value-of select="mods:namePart/text()"/>
+            </field>
+          </xsl:for-each>
+          <xsl:if test="mods:note[@displayLabel='creator']">
+            <field name="creators_ms">
+              <xsl:value-of select="'Unknown creator'"/>
+            </field>
+          </xsl:if>
 
           <!-- Add additional value for unknown to the set that SLURP generates -->
           <xsl:if test="mods:note[@displayLabel='creator']">
@@ -77,6 +97,18 @@ in the second and third sections below.
             </xsl:variable>
             <xsl:value-of select="substring($addressee_text,0,string-length($addressee_text)-1)"/>
           </field>
+          
+          <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'addressee']">
+            <xsl:sort select="mods:namePart/text()"/>
+            <field name="addressees_ms">
+              <xsl:value-of select="mods:namePart/text()"/>
+            </field>
+          </xsl:for-each>
+          <xsl:if test="mods:note[@displayLabel='addressee']">
+            <field name="addressees_ms">
+              <xsl:value-of select="'Unknown addressee'"/>
+            </field>
+          </xsl:if>
 
           <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'addressee']">
             <xsl:sort select="mods:namePart/text()"/>
@@ -108,6 +140,15 @@ in the second and third sections below.
             </xsl:variable>
             <xsl:value-of select="substring($repository_text,0,string-length($repository_text)-1)"/>
           </field>
+          <xsl:for-each select="mods:relatedItem[@type='original' and mods:name/mods:role/mods:roleTerm[@type='text']/text() = 'repository']">
+            <field name="repositories_ms">
+              <xsl:value-of select="mods:name/mods:namePart/text()"/>
+              <xsl:if test="mods:location/mods:shelfLocator">
+                <xsl:text>: </xsl:text>
+                <xsl:value-of select="mods:location/mods:shelfLocator/text()"/>
+              </xsl:if>
+            </field>        
+          </xsl:for-each>
           
           <field name="genre_s">
             <xsl:variable name="genre_text">
@@ -118,13 +159,23 @@ in the second and third sections below.
             </xsl:variable>
             <xsl:value-of select="substring($genre_text,0,string-length($genre_text)-1)"/>
           </field>
+          <xsl:for-each select="mods:genre[@authority='aat']">
+            <field name="genres_ms">
+              <xsl:value-of select="text()"/>
+            </field>
+          </xsl:for-each>
 
-          <field name="otherVersions_s">
+          <field name="otherVersion_s">
             <xsl:for-each select="mods:relatedItem[@type='otherVersion']">
               <xsl:value-of select="mods:identifier/text()"/>
               <xsl:text> </xsl:text>
             </xsl:for-each>
           </field>
+          <xsl:for-each select="mods:relatedItem[@type='otherVersion']">
+            <field name="otherVersions_ms">
+              <xsl:value-of select="mods:identifier/text()"/>
+            </field>
+          </xsl:for-each>
           
         </xsl:when>
       </xsl:choose>
