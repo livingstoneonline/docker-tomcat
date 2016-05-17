@@ -68,7 +68,7 @@
   <defaultSearchField>text</defaultSearchField>
   <solrQueryParser defaultOperator="OR"/>
 
-  <!-- Old Displays -->
-  <copyField source="repository_ms" dest="mods_relatedItem_original_name_corporate_authority_local_namePart_s"/>
+  <copyField source="*_s" dest="*_t"/>
+  <copyField source="*_ms" dest="*_mt"/>
   <copyField source="*" dest="text"/>
 </schema>
