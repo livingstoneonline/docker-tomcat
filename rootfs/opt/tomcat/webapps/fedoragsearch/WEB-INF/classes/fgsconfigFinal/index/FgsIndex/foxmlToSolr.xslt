@@ -318,6 +318,7 @@
       <field name="genre_s">
         <xsl:variable name="genre_text">
           <xsl:for-each select="mods:genre[@authority='aat']">
+            <xsl:sort select="."/>
             <xsl:value-of select="text()"/>
             <xsl:text>; </xsl:text>
           </xsl:for-each>
