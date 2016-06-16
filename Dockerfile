@@ -27,7 +27,7 @@ RUN addgroup --gid 110 tomcat && \
     apt-get -y dist-upgrade && \
     apt-get -y install maven oracle-java8-installer oracle-java8-set-default && \
     update-java-alternatives -s java-8-oracle && \
-    curl -L http://ftp.ps.pl/pub/apache/tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz | \
+    curl -L http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz | \
     tar -xzf - -C /tmp && \
     mv /tmp/apache-tomcat-${TOMCAT_VERSION} ${CATALINA_HOME} && \
     rm -rf ${CATALINA_HOME}/webapps/docs && \
