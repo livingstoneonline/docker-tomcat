@@ -190,6 +190,11 @@
         <xsl:with-param name="value" select="mods:titleInfo/mods:title[not(@*)]"/>
       </xsl:call-template>
       
+      <xsl:call-template name="field">
+        <xsl:with-param name="name">date_s</xsl:with-param>
+        <xsl:with-param name="value" select="(mods:originInfo/mods:dateCreated[not(@*)])[1]"></xsl:with-param>
+      </xsl:call-template>
+
       <xsl:for-each select="mods:originInfo/mods:dateCreated[not(@*)]">
         <xsl:sort select="text()"/>
         <xsl:call-template name="field">
