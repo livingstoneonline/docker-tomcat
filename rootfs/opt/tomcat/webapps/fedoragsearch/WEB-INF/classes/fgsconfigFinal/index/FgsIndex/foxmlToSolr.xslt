@@ -172,7 +172,17 @@
       </id>
     </delete>
   </xsl:template>
-  
+
+  <!-- TEI -->
+  <xsl:template match="foxml:datastream[@ID='TEI']/foxml:datastreamVersion[last()]">
+    <xsl:param name="content"/>
+    <field name="tei">
+      <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
+      <xsl:copy-of select="$content"/>
+      <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+    </field>
+  </xsl:template>
+
   <!-- MODS -->
   <xsl:template match="foxml:datastream[@ID='MODS']/foxml:datastreamVersion[last()]">
     <xsl:param name="content"/>
