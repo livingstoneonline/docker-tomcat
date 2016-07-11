@@ -49,11 +49,9 @@
   				<xsl:value-of select="$prefix"/>
   				<xsl:text>_</xsl:text>
   				<xsl:value-of select="$id"/>
-  				<xsl:text>_</xsl:text>
-  				<xsl:value-of select="MD5"/>
-  				<xsl:text>_s</xsl:text>
+  				<xsl:text>_MD5_s</xsl:text>
   			</xsl:attribute>
-  			<xsl:value-of select="normalize-space(.)"/>
+  			<xsl:value-of select="$element/foxml:contentDigest/@DIGEST"/>
   		</field>
   	</xsl:if>
   </xsl:template>
