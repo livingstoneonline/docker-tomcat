@@ -43,7 +43,7 @@
       </field>
     </xsl:for-each>
 
-  	<xsl:if test="$element/foxml:contentDigest[@type='MD5']">
+  	<xsl:if test="$element/foxml:contentDigest[@TYPE='MD5']">
   		<field>
   			<xsl:attribute name="name">
   				<xsl:value-of select="$prefix"/>
