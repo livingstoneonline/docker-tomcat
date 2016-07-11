@@ -42,6 +42,20 @@
         <xsl:value-of select="normalize-space(.)"/>
       </field>
     </xsl:for-each>
+
+  	<xsl:if test="$element/foxml:contentDigest[@type='MD5']">
+  		<field>
+  			<xsl:attribute name="name">
+  				<xsl:value-of select="$prefix"/>
+  				<xsl:text>_</xsl:text>
+  				<xsl:value-of select="$id"/>
+  				<xsl:text>_</xsl:text>
+  				<xsl:value-of select="MD5"/>
+  				<xsl:text>_s</xsl:text>
+  			</xsl:attribute>
+  			<xsl:value-of select="normalize-space(.)"/>
+  		</field>
+  	</xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>
