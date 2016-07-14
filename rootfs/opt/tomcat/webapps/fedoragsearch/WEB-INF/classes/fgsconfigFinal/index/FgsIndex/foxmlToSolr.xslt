@@ -204,11 +204,13 @@
     		<xsl:with-param name="name">alt_title_s</xsl:with-param>
     		<xsl:with-param name="value" select="mods:titleInfo[@type='alternative']/mods:title[not(@*)]"/>
     	</xsl:call-template>
-
-    	<xsl:call-template name="field">
-    		<xsl:with-param name="name">coordinates_s</xsl:with-param>
-    		<xsl:with-param name="value" select="mods:subject/mods:cartographics/mods:coordinates[1]"/>
-    	</xsl:call-template>
+    	
+    	<xsl:for-each select="mods:subject/mods:cartographics/mods:coordinates">
+    		<xsl:call-template name="field">
+    			<xsl:with-param name="name">coordinates_ms</xsl:with-param>
+    			<xsl:with-param name="value" select="text()"></xsl:with-param>
+    		</xsl:call-template>
+    	</xsl:for-each>
 
       <xsl:call-template name="field">
         <xsl:with-param name="name">date_s</xsl:with-param>
