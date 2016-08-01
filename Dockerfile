@@ -91,3 +91,5 @@ RUN rm -rf ${FEDORA_HOME}/data/activemq-data/localhost/KahaDB/* \
 
 # Adore-Djatoka and Solr are installed by this copy.
 COPY rootfs /
+
+RUN chown -R tomcat:tomcat /opt/fedora /opt/tomcat /opt/solr

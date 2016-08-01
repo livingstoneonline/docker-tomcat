@@ -73,7 +73,7 @@ foreground {
      } fedora-rebuild-ri.sh
 }
 foreground {
-  chown -R tomcat:tomcat ${FEDORA_HOME}
+  chown -R tomcat:tomcat ${FEDORA_HOME} /opt/tomcat /opt/solr
 }
 foreground {
   kill -s TERM $MYSQLD_PID
