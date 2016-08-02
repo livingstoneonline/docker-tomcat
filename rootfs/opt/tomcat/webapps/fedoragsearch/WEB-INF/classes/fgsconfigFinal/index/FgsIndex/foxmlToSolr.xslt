@@ -20,23 +20,23 @@
   xmlns:encoder="xalan://java.net.URLEncoder"
   xmlns:java="http://xml.apache.org/xalan/java"
   exclude-result-prefixes="exts">
-  
+
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
-  
+
   <xsl:param name="REPOSITORYNAME" select="repositoryName"/>
   <xsl:param name="FEDORASOAP" select="repositoryName"/>
   <xsl:param name="FEDORAUSER" select="repositoryName"/>
   <xsl:param name="FEDORAPASS" select="repositoryName"/>
   <xsl:param name="TRUSTSTOREPATH" select="repositoryName"/>
   <xsl:param name="TRUSTSTOREPASS" select="repositoryName"/>
-  
+
   <xsl:variable name="PROT">http</xsl:variable>
   <xsl:variable name="HOST">localhost</xsl:variable>
   <xsl:variable name="PORT">8080</xsl:variable>
   <xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
   <!--  Used for indexing other objects. -->
   <xsl:variable name="FEDORA" xmlns:java_string="xalan://java.lang.String" select="substring($FEDORASOAP, 1, java_string:lastIndexOf(java_string:new(string($FEDORASOAP)), '/'))"/>
-  
+
   <!-- FOXML Properties -->
   <!--  Used for indexing other objects. -->
   <xsl:include href="/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/islandora_transforms/library/traverse-graph.xslt"/>
@@ -44,7 +44,7 @@
   <xsl:include href="/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/islandora_transforms/datastream_info_to_solr.xslt"/>
   <xsl:include href="/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/islandora_transforms/RELS-EXT_to_solr.xslt"/>
   <xsl:include href="/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/islandora_transforms/RELS-INT_to_solr.xslt"/>
-  
+
   <!-- Decide which objects to modify the index of -->
   <xsl:template match="/">
     <update>
@@ -65,19 +65,19 @@
       </xsl:if>
     </update>
   </xsl:template>
-  
+
   <!-- Index an object -->
   <xsl:template match="/foxml:digitalObject" mode="indexFedoraObject">
     <xsl:param name="PID"/>
     <doc>
-      
+
       <field name="PID">
         <xsl:value-of select="$PID"/>
       </field>
-      
+
       <xsl:apply-templates select="foxml:objectProperties/foxml:property"/>
       <xsl:apply-templates select="/foxml:digitalObject" mode="index_object_datastreams"/>
-      
+
       <xsl:variable name="graph">
         <xsl:call-template name="_traverse_graph">
           <xsl:with-param name="risearch" select="concat($FEDORA, '/risearch')"/>
@@ -100,16 +100,16 @@
           </xsl:with-param>
         </xsl:call-template>
       </xsl:variable>
-      
+
       <xsl:variable name="pages" select="xalan:nodeset($graph)//sparql:obj[@uri != concat('info:fedora/', $PID)]"/>
-      
+
       <xsl:for-each select="$pages">
         <xsl:call-template name="field">
           <xsl:with-param name="name">pages_ms</xsl:with-param>
           <xsl:with-param name="value" select="substring-after(@uri, '/')"/>
         </xsl:call-template>
       </xsl:for-each>
-      
+
       <xsl:choose>
         <xsl:when test="count($pages) >= 1">
           <field name="viewable_b">true</field>
@@ -130,17 +130,18 @@
 
       <xsl:variable name="xml_url" select="concat(substring-before($FEDORA, '://'), '://', encoder:encode($FEDORAUSER), ':', encoder:encode($FEDORAPASS), '@', substring-after($FEDORA, '://') , '/objects/', substring-after($pages[1]/@uri, '/'), '/objectXML')"/>
       <xsl:variable name="object" select="document($xml_url)"/>
-      <xsl:if test="$object">
-        <xsl:choose>
-          <xsl:when test="$object/foxml:digitalObject/foxml:datastream[@ID = 'POLICY']">
-            <field name="hidden_b">true</field>
-          </xsl:when>
-          <xsl:otherwise>
-            <field name="hidden_b">false</field>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:if>
-      
+      <xsl:choose>
+        <xsl:when test="$object/foxml:digitalObject/foxml:datastream[@ID = 'POLICY']">
+          <field name="hidden_b">true</field>
+        </xsl:when>
+        <xsl:when test="foxml:datastream[@ID = 'POLICY']">
+           <field name="hidden_b">true</field>
+        </xsl:when>
+        <xsl:otherwise>
+          <field name="hidden_b">false</field>
+        </xsl:otherwise>
+      </xsl:choose>
+
       <xsl:for-each select="foxml:datastream[@ID = 'MODS' or @ID = 'TEI' or @ID = 'RELS-EXT']">
         <xsl:choose>
           <xsl:when test="@CONTROL_GROUP='X'">
@@ -162,7 +163,7 @@
       </xsl:for-each>
     </doc>
   </xsl:template>
-  
+
   <!-- Delete the solr doc of an object -->
   <xsl:template match="/foxml:digitalObject" mode="unindexFedoraObject">
     <xsl:comment> name="PID" This is a hack, because the code requires that to be present </xsl:comment>
@@ -191,26 +192,26 @@
       <xsl:copy-of select="$content"/>
       <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
     </field>
-    
+
     <xsl:for-each select="$content//mods:mods[1]">
       <xsl:apply-templates select="mods:*"/>
-      
+
       <xsl:call-template name="field">
         <xsl:with-param name="name">title_s</xsl:with-param>
         <xsl:with-param name="value" select="mods:titleInfo/mods:title[not(@*)]"/>
       </xsl:call-template>
 
-    	<xsl:call-template name="field">
-    		<xsl:with-param name="name">alt_title_s</xsl:with-param>
-    		<xsl:with-param name="value" select="mods:titleInfo[@type='alternative']/mods:title[not(@*)]"/>
-    	</xsl:call-template>
-    	
-    	<xsl:for-each select="mods:subject/mods:cartographics/mods:coordinates">
-    		<xsl:call-template name="field">
-    			<xsl:with-param name="name">coordinates_ms</xsl:with-param>
-    			<xsl:with-param name="value" select="text()"></xsl:with-param>
-    		</xsl:call-template>
-    	</xsl:for-each>
+      <xsl:call-template name="field">
+        <xsl:with-param name="name">alt_title_s</xsl:with-param>
+        <xsl:with-param name="value" select="mods:titleInfo[@type='alternative']/mods:title[not(@*)]"/>
+      </xsl:call-template>
+
+      <xsl:for-each select="mods:subject/mods:cartographics/mods:coordinates">
+        <xsl:call-template name="field">
+          <xsl:with-param name="name">coordinates_ms</xsl:with-param>
+          <xsl:with-param name="value" select="text()"></xsl:with-param>
+        </xsl:call-template>
+      </xsl:for-each>
 
       <xsl:call-template name="field">
         <xsl:with-param name="name">date_s</xsl:with-param>
@@ -224,7 +225,7 @@
           <xsl:with-param name="value" select="text()"></xsl:with-param>
         </xsl:call-template>
       </xsl:for-each>
-      
+
       <field name="creator_s">
         <xsl:variable name="creator_text">
           <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'creator']">
@@ -239,20 +240,20 @@
         </xsl:variable>
         <xsl:value-of select="substring($creator_text,0,string-length($creator_text)-1)"/>
       </field>
-      
+
       <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'creator']">
         <xsl:sort select="mods:namePart/text()"/>
         <field name="creator_ms">
           <xsl:value-of select="mods:namePart/text()"/>
         </field>
       </xsl:for-each>
-      
+
       <xsl:if test="mods:note[@displayLabel='creator']">
         <field name="creator_ms">
           <xsl:value-of select="'Unknown creator'"/>
         </field>
       </xsl:if>
-      
+
       <field name="addressee_s">
         <xsl:variable name="addressee_text">
           <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'addressee']">
@@ -267,7 +268,7 @@
         </xsl:variable>
         <xsl:value-of select="substring($addressee_text,0,string-length($addressee_text)-1)"/>
       </field>
-      
+
       <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'addressee']">
         <xsl:sort select="mods:namePart/text()"/>
         <field name="addressee_ms">
@@ -279,49 +280,49 @@
           <xsl:value-of select="'Unknown addressee'"/>
         </field>
       </xsl:if>
-      
+
       <xsl:for-each select="mods:name[mods:role/mods:roleTerm[@type='text']/text() = 'addressee']">
         <xsl:sort select="mods:namePart/text()"/>
         <field name="addressee_description_ms">
           <xsl:value-of select="mods:namePart/text()"/> : <xsl:value-of select="mods:description/text()"/>
         </field>
       </xsl:for-each>
-      
+
       <xsl:if test="mods:note[@displayLabel='addressee']">
         <field name="addressee_description_ms">Unknown addressee : </field>
       </xsl:if>
-      
+
       <xsl:if test="mods:originInfo[@displayLabel='Livingstone']/mods:place/mods:placeTerm[@type = 'text']">
         <field name="place_s">
           <xsl:value-of select="mods:originInfo[@displayLabel='Livingstone']/mods:place/mods:placeTerm[@type = 'text']"/>
         </field>
       </xsl:if>
-      
+
       <xsl:call-template name="field">
         <xsl:with-param name="name">extent_pages_s</xsl:with-param>
         <xsl:with-param name="value" select="mods:physicalDescription/mods:extent[@unit = 'pages']"/>
       </xsl:call-template>
-      
+
       <xsl:call-template name="field">
         <xsl:with-param name="name">extent_size_s</xsl:with-param>
         <xsl:with-param name="value" select="mods:physicalDescription/mods:extent[@unit = 'mm']"/>
       </xsl:call-template>
-      
+
       <xsl:call-template name="field">
         <xsl:with-param name="name">catalog_identifier_s</xsl:with-param>
         <xsl:with-param name="value" select="mods:identifier[@type='local' and @displayLabel='Canonical Catalog Number']"/>
       </xsl:call-template>
-      
+
       <xsl:call-template name="field">
         <xsl:with-param name="name">master_id_s</xsl:with-param>
         <xsl:with-param name="value" select="mods:identifier[@type='local' and @displayLabel='master_id']"/>
       </xsl:call-template>
-      
+
       <xsl:call-template name="field">
         <xsl:with-param name="name">copy_identifier_s</xsl:with-param>
         <xsl:with-param name="value" select="mods:identifier[@type='local' and @displayLabel='NLS copy identifier'][1]"/>
       </xsl:call-template>
-      
+
       <field name="repository_s">
         <xsl:variable name="repository_text">
           <xsl:for-each select="mods:relatedItem[@type='original' and mods:name/mods:role/mods:roleTerm[@type='text']/text() = 'repository']">
@@ -335,13 +336,13 @@
         </xsl:variable>
         <xsl:value-of select="substring($repository_text,0,string-length($repository_text)-1)"/>
       </field>
-      
+
       <xsl:for-each select="mods:relatedItem[@type='original' and mods:name/mods:role/mods:roleTerm[@type='text']/text() = 'repository']">
         <field name="repository_ms">
           <xsl:value-of select="mods:name/mods:namePart/text()"/>
-        </field>        
+        </field>
       </xsl:for-each>
-      
+
       <field name="genre_s">
         <xsl:variable name="genre_text">
           <xsl:for-each select="mods:genre[@authority='aat']">
@@ -352,26 +353,26 @@
         </xsl:variable>
         <xsl:value-of select="substring($genre_text,0,string-length($genre_text)-1)"/>
       </field>
-      
+
       <xsl:for-each select="mods:genre[@authority='aat']">
         <field name="genre_ms">
           <xsl:value-of select="text()"/>
         </field>
       </xsl:for-each>
-      
+
       <field name="otherVersion_s">
         <xsl:for-each select="mods:relatedItem[@type='otherVersion']">
           <xsl:value-of select="mods:identifier/text()"/>
           <xsl:text> </xsl:text>
         </xsl:for-each>
       </field>
-      
+
       <xsl:for-each select="mods:relatedItem[@type='otherVersion']">
         <field name="otherVersion_ms">
           <xsl:value-of select="mods:identifier/text()"/>
         </field>
       </xsl:for-each>
-      
+
       <xsl:for-each select="mods:originInfo/mods:dateCreated[@encoding='iso8601']">
         <xsl:variable name="dateStart"
           select="java:edu.ucla.library.IsoToSolrDateConverter.getStartDateFromIsoDateString(normalize-space(text()))" />
@@ -379,7 +380,7 @@
           select="java:edu.ucla.library.IsoToSolrDateConverter.getEndDateFromIsoDateString(normalize-space(text()))" />
         <xsl:variable name="counter" select="substring-before($dateStart,'-')" />
         <xsl:variable name="end" select="substring-before($dateEnd,'-')" />
-        
+
         <xsl:call-template name="date-loop">
           <xsl:with-param name="counter">
             <xsl:number value="number($counter)" />
@@ -388,19 +389,19 @@
             <xsl:number value="number($end)" />
           </xsl:with-param>
         </xsl:call-template>
-        
+
         <field name="dateRangeStart_dt">
           <xsl:value-of select="$dateStart"/>
         </field>
-        
+
         <field name="dateRangeEnd_dt">
           <xsl:value-of select="$dateEnd"/>
         </field>
       </xsl:for-each>
-      
+
     </xsl:for-each>
   </xsl:template>
-  
+
   <xsl:template name="field">
     <xsl:param name="name"/>
     <xsl:param name="value"/>
@@ -413,7 +414,7 @@
       </field>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="date-loop">
     <xsl:param name="counter"/>
     <xsl:param name="end"/>
@@ -431,7 +432,7 @@
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template match="text()"/>
   <xsl:template match="text()" mode="indexFedoraObject"/>
   <xsl:template match="text()" mode="unindexFedoraObject"/>
