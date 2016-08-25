@@ -49,5 +49,6 @@
   -->
   <cores adminPath="/admin/cores" defaultCoreName="collection1" host="${host:}" hostPort="${jetty.port:}" hostContext="${hostContext:}" zkClientTimeout="${zkClientTimeout:15000}">
     <core name="collection1" instanceDir="collection1" />
+    <core name="drupal" instanceDir="drupal" />
   </cores>
 </solr>
