@@ -19,6 +19,7 @@
   xmlns:islandora-exts="xalan://ca.upei.roblib.DataStreamForXSLT"
   xmlns:encoder="xalan://java.net.URLEncoder"
   xmlns:java="http://xml.apache.org/xalan/java"
+  xmlns:digest="org.apache.commons.codec.digest.DigestUtils"
   exclude-result-prefixes="exts">
 
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
@@ -73,6 +74,18 @@
 
       <field name="PID">
         <xsl:value-of select="$PID"/>
+      </field>
+
+      <xsl:variable name="checksum">
+        <xsl:for-each select="foxml:datastream[@ID != 'AUDIT' and @ID != 'DC' and @ID != 'RELS-INT' and @ID != 'RELS-EXT' and @ID != 'POLICY' and substring(@ID, string-length(@ID) - string-length('JP2') + 1) != 'JP2']">
+          <xsl:sort select="@ID" order="ascending" data-type="text" case-order="upper-first"/>
+          <xsl:value-of select="foxml:datastreamVersion[last()]/foxml:contentDigest[@TYPE = 'MD5']/@DIGEST" />
+        </xsl:for-each>
+      </xsl:variable>
+
+      <!-- A checksum of all the datastreams. -->
+      <field name="checksum_s">
+        <xsl:value-of select="digest:md5Hex($checksum)" />
       </field>
 
       <xsl:apply-templates select="foxml:objectProperties/foxml:property"/>
