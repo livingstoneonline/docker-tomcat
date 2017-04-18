@@ -1,95 +1,58 @@
-FROM livingstoneonline/mysql
+FROM livingstoneonline/oracle-jdk
 MAINTAINER Nigel Banks <nigel.g.banks@gmail.com>
 
-LABEL "License"="GPLv3" \
+LABEL "License"="GPLv1" \
       "Version"="0.0.1"
 
 EXPOSE 8080
 
-COPY build /build
-
-# Install Java / Tomcat.
-ARG TOMCAT_VERSION="7.0.69"
-
-ENV JAVA_HOME=/usr/lib/jvm/java-8-oracle \
-    CATALINA_HOME=/opt/tomcat \
-    CATALINA_BASE=/opt/tomcat \
+ENV CATALINA_HOME=/opt/tomcat \
+    FEDORA_HOME=/opt/fedora \
+    SOLR_HOME=/opt/solr \
+    DJATOKA_HOME=/opt/adore-djatoka \
     KAKADU_HOME=/opt/adore-djatoka/bin/Linux-x86-64 \
-    SOLR_HOME=/opt/solr
+    PATH=/opt/tomcat/bin:$PATH \
+    CATALINA_OPTS="-server -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Djava.security.egd=file:/dev/urandom -Dkakadu.home=/opt/adore-djatoka/bin/Linux-x86-64 -DLD_LIBRARY_PATH=/opt/adore-djatoka/lib/Linux-x86-64 -Djava.library.path=/opt/adore-djatoka/lib/Linux-x86-64"
 
-RUN addgroup --gid 110 tomcat && \
-    adduser --system --disabled-password --no-create-home --ingroup tomcat --uid 105 --shell /sbin/nologin --home /opt/tomcat tomcat && \
-    apt-get update && \
-    add-apt-repository -y ppa:webupd8team/java && \
-    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
-    apt-get update && \
-    apt-get -y dist-upgrade && \
-    apt-get -y install maven oracle-java8-installer oracle-java8-set-default && \
-    update-java-alternatives -s java-8-oracle && \
-    curl -L http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz | \
-    tar -xzf - -C /tmp && \
-    mv /tmp/apache-tomcat-${TOMCAT_VERSION} ${CATALINA_HOME} && \
-    rm -rf ${CATALINA_HOME}/webapps/docs && \
-    rm -rf ${CATALINA_HOME}/webapps/examples && \
-    ln -s /opt/adore-djatoka/bin/Linux-x86-64/kdu_compress /usr/bin/kdu_compress && \
-    ln -s /opt/adore-djatoka/bin/Linux-x86-64/kdu_expand /usr/bin/kdu_expand && \
-    ln -s /opt/adore-djatoka/lib/Linux-x86-64/libkdu_a60R.so /usr/lib/libkdu_a60R.so && \
-    ln -s /opt/adore-djatoka/lib/Linux-x86-64/libkdu_jni.so /usr/lib/libkdu_jni.so && \
-    ln -s /opt/adore-djatoka/lib/Linux-x86-64/libkdu_v60R.so /usr/lib/libkdu_v60R.so && \
+# Add Tomcat user.
+RUN mkdir -p ${CATALINA_HOME} && \
+    addgroup tomcat && \
+    adduser --system --disabled-password --no-create-home --ingroup tomcat --shell /sbin/nologin --home ${CATALINA_HOME} tomcat
+
+WORKDIR ${CATALINA_HOME}
+
+# see https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/KEYS
+RUN for key in \
+	    05AB33110949707C93A279E3D3EFE6B686867BA6 \
+	    07E48665A34DCAFAE522E5E6266191C37C037D42 \
+	    47309207D818FFD8DCD3F83F1931D684307A10A5 \
+	    541FBE7D8F78B25E055DDEE13C370389288584E7 \
+	    61B832AC2F1C5A90F0F9B00A1C506407564C17A3 \
+	    713DA88BE50911535FE716F5208B0AB1D63011C7 \
+	    79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED \
+	    9BA44C2621385CB966EBA586F72C284D731FABEE \
+	    A27677289986DB50844682F8ACB77FC2E86E29AC \
+	    A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 \
+	    DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 \
+	    F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE \
+	    F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23 \
+	  ; do \
+		  gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+	  done
+
+ARG TOMCAT_VERSION=7.0.77
+
+RUN curl -fSL "https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" -o tomcat.tar.gz && \
+    curl -fSL "https://www.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz.asc" -o tomcat.tar.gz.asc && \
+	  gpg --batch --verify tomcat.tar.gz.asc tomcat.tar.gz && \
+	  tar -xvf tomcat.tar.gz --strip-components=1 && \
+	  rm -fr tomcat.tar.gz* bin/*.bat webapps/docs webapps/examples
+
+# MySQL is a dependancies requried to setup Fedora.
+RUN apt-install mysql-client && \
     cleanup
 
-# Install Fedora.
-ARG FEDORA_VERSION="3.8.1"
-
-ENV FEDORA_HOME=/opt/fedora
-RUN mysql_install_db --datadir="/var/lib/mysql" --user=mysql && \
-    sleep 15 && \
-    { mysqld_safe & } && \
-    sleep 10 && \
-    mysql -e "CREATE DATABASE fedora3;" && \
-    mysql -e "CREATE USER 'fedoraAdmin'@'localhost' IDENTIFIED BY 'fedoraAdmin';" && \
-    mysql -e "GRANT ALL ON fedora3.* TO fedoraAdmin@'%' IDENTIFIED BY 'fedoraAdmin';" && \
-    mkdir ${FEDORA_HOME} && \
-    curl -L -o /tmp/fcrepo-installer-${FEDORA_VERSION}.jar \
-    http://sourceforge.net/projects/fedora-commons/files/fedora/${FEDORA_VERSION}/fcrepo-installer-${FEDORA_VERSION}.jar/download && \
-    java -jar /tmp/fcrepo-installer-${FEDORA_VERSION}.jar /build/install.properties && \
-    ${CATALINA_HOME}/bin/catalina.sh start && sleep 90 && \
-    ${CATALINA_HOME}/bin/catalina.sh stop && sleep 30 && \
-    mysqldump -u fedoraAdmin --password=fedoraAdmin fedora3 | gzip -c > /run/fedora3.sql.gz && \
-    rm -fr ${FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/default && \
-    mysqladmin shutdown && sleep 30 && \
-    curl -L -o ${CATALINA_HOME}/webapps/fedora/WEB-INF/lib/fcrepo-drupalauthfilter-3.8.1.jar \
-    https://github.com/Islandora/islandora_drupal_filter/releases/download/v7.1.3/fcrepo-drupalauthfilter-3.8.1.jar && \
-    chown -R tomcat:tomcat ${FEDORA_HOME} && \
-    rm -rf ${FEDORA_HOME}/data/fedora-xacml-policies/repository-policies/default/* && \
-    rm -rf ${FEDORA_HOME}/docs && \
-    rm -rf ${CATALINA_HOME}/webapps/*.war && \
-    rm -rf ${CATALINA_HOME}/webapps/fedora-demo && \
-    rm -rf ${CATALINA_HOME}/logs/* && \
-    rm -rf ${FEDORA_HOME}/server/logs/* && \
-    rm -rf /var/lib/mysql/* && \
-    cleanup
-
-# Configuration Settings.
-ENV JAVA_OPTS="" \
-    CATALINA_OPTS="-server -XX:+CMSClassUnloadingEnabled -Djava.awt.headless=true -Djava.security.egd=file:/dev/urandom -Dkakadu.home=/opt/adore-djatoka/bin/Linux-x86-64 -DLD_LIBRARY_PATH=/opt/adore-djatoka/lib/Linux-x86-64 -Djava.library.path=/opt/adore-djatoka/lib/Linux-x86-64" \
-    TOMCAT_ADMIN_USER=admin \
-    TOMCAT_ADMIN_PASSWORD=tomcat \
-    FEDORA_DB_NAME=fedora3 \
-    FEDORA_DB_USER=fedoraAdmin \
-    FEDORA_DB_PASSWORD=fedoraAdmin \
-    FEDORA_ADMIN_USER=fedoraAdmin \
-    FEDORA_ADMIN_PASSWORD=fedoraAdmin \
-    FEDORA_INTERNAL_PASSWORD=password \
-    FEDORA_IMPORT_DATA=no \
-    FEDORA_REBUILD=no
-
-RUN rm -rf ${FEDORA_HOME}/data/activemq-data/localhost/KahaDB/* \
-           ${FEDORA_HOME}/data/resourceIndex/xaStatementStore/* \
-           ${FEDORA_HOME}/data/resourceIndex/xaStringPool/*
-
-# Adore-Djatoka and Solr are installed by this copy.
+# All wars and dependancies are installed by this copy.
 COPY rootfs /
 
-RUN chown -R tomcat:tomcat /opt/fedora /opt/tomcat /opt/solr
+RUN chown -R tomcat:tomcat ${CATALINA_HOME} ${FEDORA_HOME} ${SOLR_HOME} ${DJATOKA_HOME}

@@ -1,0 +1,13 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+# Set the correct directory ownership for Tomcat & SOLR
+with-contenv
+multisubstitute
+{
+  import -i CATALINA_HOME
+  import -i FEDORA_HOME
+  import -i SOLR_HOME
+  import -i DJATOKA_HOME
+}
+chown -R tomcat:tomcat ${CATALINA_HOME} ${FEDORA_HOME} ${SOLR_HOME} ${DJATOKA_HOME}

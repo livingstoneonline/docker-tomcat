@@ -3,6 +3,6 @@ src = "fedoragsearch.properties.tmpl"
 dest = "/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/fedoragsearch.properties"
 prefix= "/fedora"
 uid = 105
-gid = 110
+gid = 1000
 mode="0644"
 keys = ["/admin/user", "/admin/password"]

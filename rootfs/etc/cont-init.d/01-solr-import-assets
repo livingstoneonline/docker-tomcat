@@ -1,0 +1,15 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+with-contenv
+multisubstitute
+{
+  import -i SOLR_HOME
+  import -i SOLR_IMPORT_DATA
+}
+if -t { s6-test ${SOLR_IMPORT_DATA} = "yes" }
+ifelse { s6-test -e "/assets/solr-data.tar.bz2" } {
+  foreground {
+     cd / pipeline -d { bzip2 -dc /assets/solr-data.tar.bz2 } /bin/tar xvf -
+  } echo "Decompressed solr-data.tar.bz2."
+} echo "/assets/solr-data.tar.bz2 is missing."

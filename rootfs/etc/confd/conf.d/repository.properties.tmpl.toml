@@ -1,8 +1,0 @@
-[template]
-src = "repository.properties.tmpl"
-dest = "/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/repository/FgsRepos/repository.properties"
-prefix= "/fedora"
-uid = 105
-gid = 110
-mode="0644"
-keys = ["/admin/user", "/admin/password"]

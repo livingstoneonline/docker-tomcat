@@ -1,0 +1,7 @@
+[template]
+src = "index.properties.tmpl"
+dest = "/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/index/FgsIndex/index.properties"
+uid = 105
+gid = 1000
+mode="0644"
+keys = ["/solr/host", "/solr/host/port", "/solr/home"]

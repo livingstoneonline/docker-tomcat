@@ -1,0 +1,43 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+with-contenv
+multisubstitute
+{
+  import -i MYSQL_HOST
+  import -i MYSQL_HOST_PORT
+  import -i MYSQL_ROOT_USER
+  import -i MYSQL_ROOT_PASSWORD
+  import -i FEDORA_DB_NAME
+  import -i FEDORA_IMPORT_DATA
+}
+# Import Fedora Data.
+if -t { s6-test ${FEDORA_IMPORT_DATA} = "yes" }
+   foreground { echo "Importing Data from /assets" }
+   # Unpack Fedora data.
+   foreground {
+     ifelse { s6-test -e "/assets/fedora-data.tar.bz2" } {
+       foreground {
+         cd / pipeline -d { bzip2 -dc /assets/fedora-data.tar.bz2 } /bin/tar xvf -
+       } echo "Decompressed fedora-data.tar.bz2."
+     } echo "/assets/fedora-data.tar.bz2 is missing."
+   }
+   # Unpack database.
+   foreground {
+     ifelse { s6-test -e /assets/fedora3.sql.gz } {
+       foreground {
+         cd /assets gunzip fedora3.sql.gz
+       } echo "Decompressed fedora3.sql.gz."
+     } echo "No Fedora database dump to decompress."
+   }
+   foreground {
+     ifelse { s6-test -e /assets/fedora3.sql } {
+       foreground {
+         redirfd -r 0 /assets/fedora3.sql
+         mysql
+         --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSWORD}
+         --host=${MYSQL_HOST} --port=${MYSQL_HOST_PORT} --protocol=tcp
+         ${FEDORA_DB_NAME}
+       } echo "Imported /assets/fedora3.sql."
+     } echo "/assets/fedora3.sql is missing."
+   }

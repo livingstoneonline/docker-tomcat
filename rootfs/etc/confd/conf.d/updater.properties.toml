@@ -1,0 +1,8 @@
+[template]
+src = "updater.properties.tmpl"
+dest = "/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/updater/FgsUpdaters/updater.properties"
+prefix= "/fedora"
+uid = 105
+gid = 1000
+mode="0644"
+keys = ["/host", "/jms/port"]

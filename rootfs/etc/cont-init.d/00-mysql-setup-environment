@@ -1,0 +1,19 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+with-contenv
+multisubstitute
+{
+  import -D "mysql" MYSQL_HOST
+  import -D "3306" MYSQL_HOST_PORT
+  import -D "root" MYSQL_ROOT_USER
+  import -i MYSQL_ROOT_PASSWORD
+}
+foreground {
+  s6-env -i
+  MYSQL_HOST=$MYSQL_HOST
+  MYSQL_HOST_PORT=$MYSQL_HOST_PORT
+  MYSQL_ROOT_USER=$MYSQL_ROOT_USER
+  MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+  s6-dumpenv -- /var/run/s6/container_environment
+}

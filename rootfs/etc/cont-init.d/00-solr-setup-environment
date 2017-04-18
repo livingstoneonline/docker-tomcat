@@ -1,0 +1,21 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+with-contenv
+multisubstitute
+{
+  import -D "localhost" SOLR_HOST
+  import -D "8080" SOLR_HOST_PORT
+  import -D "/opt/solr" SOLR_HOME
+  import -D "no" SOLR_IMPORT_DATA
+  import -D "no" SOLR_REBUILD
+}
+foreground {
+  s6-env -i
+  SOLR_HOST=$SOLR_HOST
+  SOLR_HOST_PORT=$SOLR_HOST_PORT
+  SOLR_HOME=$SOLR_HOME
+  SOLR_IMPORT_DATA=$SOLR_IMPORT_DATA
+  SOLR_REBUILD=$SOLR_REBUILD
+  s6-dumpenv -- /var/run/s6/container_environment
+}

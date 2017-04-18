@@ -1,0 +1,21 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+# Waits for MySQL connection indefinitely.
+with-contenv
+multisubstitute
+{
+  import -i MYSQL_HOST
+  import -i MYSQL_HOST_PORT
+  import -i MYSQL_ROOT_USER
+  import -i MYSQL_ROOT_PASSWORD
+}
+# Wait until we can connect to MySQL.
+foreground { echo "Waiting for MySQL connection." }
+loopwhilex -x 0
+redirfd -w 1 /dev/null
+redirfd -w 2 /dev/null
+mysql
+--user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSWORD}
+--host=${MYSQL_HOST} --port=${MYSQL_HOST_PORT} --protocol=tcp
+-e "SELECT 1"

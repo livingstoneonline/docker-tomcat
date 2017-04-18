@@ -1,0 +1,10 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+# Rebuild database and index.
+with-contenv
+import -i SOLR_REBUILD
+if -t { s6-test ${SOLR_REBUILD} = "yes" }
+   foreground {
+     solr-rebuild-index.sh
+   }

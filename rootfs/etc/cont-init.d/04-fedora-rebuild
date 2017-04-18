@@ -1,0 +1,10 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+# Rebuild database and index.
+with-contenv
+import -i FEDORA_REBUILD
+if -t { s6-test ${FEDORA_REBUILD} = "yes" }
+   foreground {
+     fedora-rebuild-database.sh
+   } fedora-rebuild-ri.sh

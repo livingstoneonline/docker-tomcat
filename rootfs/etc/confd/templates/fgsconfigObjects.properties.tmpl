@@ -10,7 +10,7 @@
 # The Fedora repository used for the config objects is by default the same as
 # the repository to be indexed. If you want another repository, then change the
 # property values in the runtime fgsconfigObjects.properties
-fgsconfigObjects.fedoraSoap=http://localhost:8080/fedora
+fgsconfigObjects.fedoraSoap=http://{{ getv "/host" }}:{{ getv "/host/port" }}/fedora
 fgsconfigObjects.fedoraUser={{ getv "/admin/user" }}
 fgsconfigObjects.fedoraPass={{ getv "/admin/password" }}
 fgsconfigObjects.trustStorePath=

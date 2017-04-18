@@ -559,7 +559,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
 			evictor thread (if applicable). A value less than zero indicates 
 			that ceil(numIdle)/abs(numTestsPerEvictionRun) will be run.</comment>
     </param>
-    <param name="dbUsername" value="{{ getv "/db/user" }}">
+    <param name="dbUsername" value="{{ getv "/fedora/db/user" }}">
       <comment>The database user name.</comment>
     </param>
     <param name="maxIdle" value="10">
@@ -588,14 +588,14 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
       <comment>When true, objects are validated before returned to the 
 			pool.</comment>
     </param>
-    <param name="jdbcURL" value="jdbc:mysql://localhost:3306/{{ getv "/db/name" }}?useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;autoReconnect=true">
+    <param name="jdbcURL" value="jdbc:mysql://{{ getv "/mysql/host" }}:{{ getv "/mysql/host/port"}}/{{ getv "/fedora/db/name" }}?useUnicode=true&amp;amp;characterEncoding=UTF-8&amp;amp;autoReconnect=true">
       <comment>The JDBC connection URL.</comment>
     </param>
     <param name="ddlConverter" value="org.fcrepo.server.utilities.MySQLDDLConverter"/>
     <param name="jdbcDriverClass" value="com.mysql.jdbc.Driver">
       <comment>The JDBC driver class name.</comment>
     </param>
-    <param name="dbPassword" value="{{ getv "/db/password" }}">
+    <param name="dbPassword" value="{{ getv "/fedora/db/password" }}">
       <comment>The database password.</comment>
     </param>
     <param name="maxActive" value="100">
@@ -632,7 +632,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
             evictor thread (if applicable). A value less than zero indicates 
             that ceil(numIdle)/abs(numTestsPerEvictionRun) will be run.</comment>
     </param>
-    <param name="dbUsername" value="{{ getv "/db/user" }}">
+    <param name="dbUsername" value="{{ getv "/fedora/db/user" }}">
       <comment>The database user name.</comment>
     </param>
     <param name="maxIdle" value="10">
@@ -661,14 +661,14 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
       <comment>When true, objects are validated before returned to the 
             pool.</comment>
     </param>
-    <param name="jdbcURL" value="jdbc:derby:/opt/fedora/current/derby/{{ getv "/db/name" }};create=true">
+    <param name="jdbcURL" value="jdbc:derby:/opt/fedora/current/derby/{{ getv "/fedora/db/name" }};create=true">
       <comment>The JDBC connection URL.</comment>
     </param>
     <param name="ddlConverter" value="org.fcrepo.server.utilities.DerbyDDLConverter"/>
     <param name="jdbcDriverClass" value="org.apache.derby.jdbc.EmbeddedDriver">
       <comment>The JDBC driver class name.</comment>
     </param>
-    <param name="dbPassword" value="{{ getv "/db/password" }}">
+    <param name="dbPassword" value="{{ getv "/fedora/db/password" }}">
       <comment>The database password.</comment>
     </param>
     <param name="maxActive" value="100">
@@ -714,7 +714,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
 			evictor thread (if applicable). A value less than zero indicates 
 			that ceil(numIdle)/abs(numTestsPerEvictionRun) will be run.</comment>
     </param>
-    <param name="dbUsername" value="{{ getv "/db/user" }}">
+    <param name="dbUsername" value="{{ getv "/fedora/db/user" }}">
       <comment>The database user name.</comment>
     </param>
     <param name="maxIdle" value="10">
@@ -743,14 +743,14 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
       <comment>When true, objects are validated before returned to the 
 			pool.</comment>
     </param>
-    <param name="jdbcURL" value="jdbc:oracle:thin:@localhost:1521:{{ getv "/db/name" }}">
+    <param name="jdbcURL" value="jdbc:oracle:thin:@localhost:1521:{{ getv "/fedora/db/name" }}">
       <comment>The JDBC connection URL.</comment>
     </param>
     <param name="ddlConverter" value="org.fcrepo.server.utilities.OracleDDLConverter"/>
     <param name="jdbcDriverClass" value="oracle.jdbc.OracleDriver">
       <comment>The JDBC driver class name.</comment>
     </param>
-    <param name="dbPassword" value="{{ getv "/db/password" }}">
+    <param name="dbPassword" value="{{ getv "/fedora/db/password" }}">
       <comment>The database password.</comment>
     </param>
     <param name="maxActive" value="100">
@@ -795,7 +795,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
 			evictor thread (if applicable). A value less than zero indicates 
 			that ceil(numIdle)/abs(numTestsPerEvictionRun) will be run.</comment>
     </param>
-    <param name="dbUsername" value="{{ getv "/db/user" }}">
+    <param name="dbUsername" value="{{ getv "/fedora/db/user" }}">
       <comment>The database user name.</comment>
     </param>
     <param name="maxIdle" value="10">
@@ -824,14 +824,14 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
       <comment>When true, objects are validated before returned to the 
 			pool.</comment>
     </param>
-    <param name="jdbcURL" value="jdbc:postgresql:{{ getv "/db/name" }}">
+    <param name="jdbcURL" value="jdbc:postgresql:{{ getv "/fedora/db/name" }}">
       <comment>The JDBC connection URL.</comment>
     </param>
     <param name="ddlConverter" value="org.fcrepo.server.utilities.PostgresDDLConverter"/>
     <param name="jdbcDriverClass" value="org.postgresql.Driver">
       <comment>The JDBC driver class name.</comment>
     </param>
-    <param name="dbPassword" value="{{ getv "/db/password" }}">
+    <param name="dbPassword" value="{{ getv "/fedora/db/password" }}">
       <comment>The database password.</comment>
     </param>
     <param name="maxActive" value="100">
@@ -936,7 +936,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
     <param name="ddlGenerator" value="org.nsdl.mptstore.impl.postgres.PostgresDDLGenerator"/>
     <param name="fetchSize" value="1000"/>
     <param name="poolMaxSize" value="10"/>
-    <param name="password" value="{{ getv "/db/password" }}"/>
+    <param name="password" value="{{ getv "/fedora/db/password" }}"/>
     <param name="bufferSafeCapacity" value="2000"/>
     <param name="jdbcURL" value="jdbc:postgresql://localhost/riTriples"/>
     <param name="connectorClassName" value="org.trippi.impl.mpt.MPTConnector"/>
@@ -944,7 +944,7 @@ https://wiki.duraspace.org/display/FEDORA36/Spring+Security
     <param name="bufferFlushBatchSize" value="1000"/>
     <param name="autoFlushBufferSize" value="1000"/>
     <param name="poolInitialSize" value="3"/>
-    <param name="username" value="{{ getv "/db/user" }}"/>
+    <param name="username" value="{{ getv "/fedora/db/user" }}"/>
   </datastore>
   <datastore id="apimUpdateMessages">
     <comment>Messaging Destination for API-M events which update the repository</comment>

@@ -1,0 +1,35 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+with-contenv
+multisubstitute
+{
+  import -D "localhost" FEDORA_HOST
+  import -D "8080" FEDORA_HOST_PORT
+  import -D "61616" FEDORA_JMS_PORT
+  import -D "/opt/fedora" FEDORA_HOME
+  import -D "fedora3" FEDORA_DB_NAME
+  import -D "fedoraAdmin" FEDORA_DB_USER
+  import -i FEDORA_DB_PASSWORD
+  import -D "fedoraAdmin" FEDORA_ADMIN_USER
+  import -i FEDORA_ADMIN_PASSWORD
+  import -i FEDORA_INTERNAL_PASSWORD
+  import -D "no" FEDORA_IMPORT_DATA
+  import -D "no" FEDORA_REBUILD
+}
+foreground {
+  s6-env -i
+  FEDORA_HOST=$FEDORA_HOST
+  FEDORA_HOST_PORT=$FEDORA_HOST_PORT
+  FEDORA_HOME=$FEDORA_HOME
+  FEDORA_JMS_PORT=$FEDORA_JMS_PORT
+  FEDORA_DB_NAME=$FEDORA_DB_NAME
+  FEDORA_DB_USER=$FEDORA_DB_USER
+  FEDORA_DB_PASSWORD=$FEDORA_DB_PASSWORD
+  FEDORA_ADMIN_USER=$FEDORA_ADMIN_USER
+  FEDORA_ADMIN_PASSWORD=$FEDORA_ADMIN_PASSWORD
+  FEDORA_INTERNAL_PASSWORD=$FEDORA_INTERNAL_PASSWORD
+  FEDORA_IMPORT_DATA=$FEDORA_IMPORT_DATA
+  FEDORA_REBUILD=$FEDORA_REBUILD
+  s6-dumpenv -- /var/run/s6/container_environment
+}

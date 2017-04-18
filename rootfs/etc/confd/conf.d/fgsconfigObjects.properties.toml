@@ -1,0 +1,8 @@
+[template]
+src = "fgsconfigObjects.properties.tmpl"
+dest = "/opt/tomcat/webapps/fedoragsearch/WEB-INF/classes/fgsconfigFinal/fgsconfigObjects.properties"
+prefix= "/fedora"
+uid = 105
+gid = 1000
+mode="0644"
+keys = ["/host", "/host/port", "/admin/user", "/admin/password"]

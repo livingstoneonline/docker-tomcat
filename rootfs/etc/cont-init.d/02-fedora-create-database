@@ -1,0 +1,60 @@
+#!/usr/bin/execlineb -P
+# -*- mode: sh -*-
+# vi: set ft=sh:
+with-contenv
+multisubstitute
+{
+  import -i MYSQL_HOST
+  import -i MYSQL_HOST_PORT
+  import -i MYSQL_ROOT_USER
+  import -i MYSQL_ROOT_PASSWORD
+  import -i FEDORA_DB_NAME
+  import -i FEDORA_DB_USER
+  import -i FEDORA_DB_PASSWORD
+}
+# Only create the database and user for Fedora if the database does not already
+# exist. If we create it we need to populate it with the default fedora3.sql
+# database generated when the container was built.
+if -nt {
+    redirfd -w 2 /dev/null
+    mysql
+    --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSWORD}
+    --host=${MYSQL_HOST} --port=${MYSQL_HOST_PORT} --protocol=tcp
+    -e use ${FEDORA_DB_NAME}
+  }
+   foreground {
+     echo "Creating Fedora database."
+   }
+   foreground {
+     redirfd -w 2 /dev/null
+     mysql
+     --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSWORD}
+     --host=${MYSQL_HOST} --port=${MYSQL_HOST_PORT} --protocol=tcp
+     -e "CREATE USER '${FEDORA_DB_USER}'@'localhost' IDENTIFIED BY '${FEDORA_DB_PASSWORD}';
+         CREATE USER '${FEDORA_DB_USER}'@'%' IDENTIFIED BY '${FEDORA_DB_PASSWORD}';
+         CREATE DATABASE ${FEDORA_DB_NAME};
+         GRANT ALL ON ${FEDORA_DB_NAME}.* TO '${FEDORA_DB_USER}'@'localhost';
+         GRANT ALL ON ${FEDORA_DB_NAME}.* TO '${FEDORA_DB_USER}'@'%';
+         FLUSH PRIVILEGES;"
+   }
+   foreground {
+     echo "Created Fedora database."
+   }
+   foreground {
+     ifelse { s6-test -e /opt/fedora/install/fedora3.sql.gz } {
+       foreground {
+         cd /opt/fedora/install gunzip fedora3.sql.gz
+       } echo "Decompressed default Fedora database."
+     } echo "No Default Fedora database dump to decompress."
+   }
+   foreground {
+     ifelse { s6-test -e /opt/fedora/install/fedora3.sql } {
+       foreground {
+         redirfd -r 0 /opt/fedora/install/fedora3.sql
+         mysql
+         --user=${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSWORD}
+         --host=${MYSQL_HOST} --port=${MYSQL_HOST_PORT} --protocol=tcp
+         ${FEDORA_DB_NAME}
+       } echo "Imported default Fedora database."
+     } echo "/opt/fedora/install/fedora3.sql is missing."
+   }
