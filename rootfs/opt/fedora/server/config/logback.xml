@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
   <property name="FEDORA_LOG_PATH"
-            value="${fedora.home}/server/logs/fedora${logfile.extension:-.log}"/>
+            value="/opt/tomcat/logs/fedora${logfile.extension:-.log}"/>
   <appender name="FEDORA" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${FEDORA_LOG_PATH}</file>
     <encoder>                                                           
@@ -19,7 +19,7 @@
     <appender-ref ref="FEDORA"/>
   </logger>
   
-  <logger name="org.apache.cxf" additivity="false" level="WARN">
+  <logger name="org.apache.cxf" additivity="false" level="INFO">
     <appender-ref ref="FEDORA"/>
   </logger>
   <!-- Remove the comments around this section to send FeSL debug messages to fesl.log
@@ -47,7 +47,7 @@
   end FeSL logging -->
   
   
-  <root additivity="false" level="WARN">
+  <root additivity="false" level="INFO">
     <appender-ref ref="FEDORA"/>
   </root>
 </configuration>

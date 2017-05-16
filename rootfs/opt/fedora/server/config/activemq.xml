@@ -21,6 +21,21 @@
     <amq:persistenceAdapter>
       <amq:amqPersistenceAdapter directory="file:./data/amq"/>
     </amq:persistenceAdapter>
+
+    <!-- Limits -->
+    <amq:systemUsage>
+      <amq:systemUsage>
+        <amq:memoryUsage>
+          <amq:memoryUsage percentOfJvmHeap="70" />
+        </amq:memoryUsage>
+        <amq:storeUsage>
+          <amq:storeUsage limit="10 gb"/>
+        </amq:storeUsage>
+        <amq:tempUsage>
+          <amq:tempUsage limit="5 gb"/>
+        </amq:tempUsage>
+      </amq:systemUsage>
+    </amq:systemUsage>
   </amq:broker>
 
   <!-- Set this to prevent objects from being serialized when

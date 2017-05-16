@@ -48,8 +48,9 @@ RUN curl -fSL "https://www.apache.org/dyn/closer.cgi?action=download&filename=to
 	  tar -xvf tomcat.tar.gz --strip-components=1 && \
 	  rm -fr tomcat.tar.gz* bin/*.bat webapps/docs webapps/examples
 
+# Cron is required to cleanup old files periodically.
 # MySQL is a dependancies requried to setup Fedora.
-RUN apt-install mysql-client && \
+RUN apt-install cron mysql-client && \
     cleanup
 
 # All wars and dependancies are installed by this copy.
