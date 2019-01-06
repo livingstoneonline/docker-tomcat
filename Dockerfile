@@ -40,7 +40,7 @@ RUN for key in \
 		  gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	  done
 
-ARG TOMCAT_VERSION=7.0.82
+ARG TOMCAT_VERSION=7.0.92
 
 RUN curl -fSL "https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" -o tomcat.tar.gz && \
     curl -fSL "https://www.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION%%.*}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz.asc" -o tomcat.tar.gz.asc && \
